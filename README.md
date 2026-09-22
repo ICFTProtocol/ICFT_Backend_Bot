@@ -70,6 +70,8 @@ MAX_ICFT_PER_LIQUIDATION=1000
 | `src/doctor.ts` | Role, ICFT balance, and allowance checks. |
 | `OPERATIONS.md` | Deployment and incident runbook. |
 
+For container and hosted-worker deployment, read [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Security rules
 
 - Keep `OPERATOR_PRIVATE_KEY` in a secret manager, never Git or a frontend environment file.
