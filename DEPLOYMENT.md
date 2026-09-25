@@ -2,6 +2,12 @@
 
 The keeper is a continuously running Ethereum Sepolia worker. Do not deploy it to Vercel: Vercel is appropriate for the frontend, not a permanent polling process.
 
+## Home Server
+
+A home server is suitable for the current dry-run Sepolia worker. It needs outbound HTTPS access to the configured RPC only; it does not expose an HTTP API, so no public port, domain, firewall rule, or frontend callback URL is required.
+
+Keep `EXECUTION_ENABLED=false`. Start one process with a persistent `STATE_FILE`, and use a service manager such as systemd, launchd, or Docker restart policies to restart it after a reboot.
+
 ## Safe Demo Topology
 
 - **Frontend:** Vercel, public testnet site.

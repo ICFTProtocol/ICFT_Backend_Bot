@@ -8,11 +8,13 @@ Restricted liquidation keeper for the ICFT Ethereum Sepolia baseline.
 
 1. Indexes LendingPool borrower events from `START_BLOCK`.
 2. Persists discovered borrowers and the last scanned block in a local JSON state file.
-3. Queries `LiquidationEngine.previewLiquidation` for ETH, wBTC, and wstETH.
+3. Queries `LiquidationEngine.previewLiquidation` for ETH and wBTC.
 4. Records liquidation opportunities in dry-run mode by default.
 5. When explicitly enabled, re-simulates `executeLiquidation`, broadcasts it, waits for its receipt, and records the hash.
 
 The contracts calculate liquidation eligibility and size. The keeper only discovers opportunities and submits a permitted transaction.
+
+When `LendingPool.paused()` is true, the keeper continues indexing borrower events but suspends liquidation evaluation and execution. This is an on-chain safety gate, not a frontend setting.
 
 ## Quick start
 

@@ -26,7 +26,8 @@ export const config = {
   icft: address("ICFT_ADDRESS"),
   lendingPool: address("LENDING_POOL_ADDRESS"),
   liquidationEngine: address("LIQUIDATION_ENGINE_ADDRESS"),
-  collateralAssets: ["0x0000000000000000000000000000000000000000", address("WBTC_ADDRESS"), address("WSTETH_ADDRESS")] as Address[],
+  // wstETH is intentionally excluded until its Sepolia feed and risk bounds are remediated.
+  collateralAssets: ["0x0000000000000000000000000000000000000000", address("WBTC_ADDRESS")] as Address[],
   startBlock: BigInt(number("START_BLOCK", 0)),
   logBatchSize: BigInt(number("LOG_BATCH_SIZE", 2_000)),
   pollIntervalMs: number("POLL_INTERVAL_MS", 15_000),

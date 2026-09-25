@@ -18,6 +18,10 @@ export async function createKeeper() {
 
   if (config.executionEnabled) await assertExecutionPrerequisites(account!.address);
 
+  async function isPoolPaused() {
+    return publicClient.readContract({ address: config.lendingPool, abi: lendingPoolAbi, functionName: "paused" });
+  }
+
   async function discoverBorrowers() {
     const latest = await publicClient.getBlockNumber();
     let from = store.nextBlock;
@@ -77,6 +81,11 @@ export async function createKeeper() {
       return;
     }
 
+    if (await isPoolPaused()) {
+      logger.warn({ user, asset }, "liquidation execution skipped because LendingPool is paused");
+      return;
+    }
+
     // Re-simulate at the latest chain state immediately before broadcasting.
     const simulation = await publicClient.simulateContract({
       account: account!.address,
@@ -98,6 +107,10 @@ export async function createKeeper() {
   return {
     async runOnce() {
       await discoverBorrowers();
+      if (await isPoolPaused()) {
+        logger.warn("LendingPool is paused; borrower indexing completed but liquidation evaluation is suspended");
+        return;
+      }
       await evaluateBorrowers();
     },
     intervalMs: config.pollIntervalMs

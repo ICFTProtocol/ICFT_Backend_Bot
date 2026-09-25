@@ -16,7 +16,8 @@ export const liquidationEngineAbi = parseAbi([
 ]);
 
 export const lendingPoolAbi = parseAbi([
-  "function LIQUIDATION_BOT_ROLE() view returns (bytes32)"
+  "function LIQUIDATION_BOT_ROLE() view returns (bytes32)",
+  "function paused() view returns (bool)"
 ]);
 
 export const borrowerEvents = [
