@@ -12,7 +12,7 @@ const publicClient = createPublicClient({ chain: sepolia, transport: http(config
 type Preview = readonly [boolean, Address, bigint, bigint, bigint, bigint, bigint];
 
 export async function createKeeper() {
-  const store = await Store.open(config.stateFile, config.startBlock);
+  const store = await Store.open(config.stateFile, config.startBlock, config.lendingPool);
   const account = config.operatorPrivateKey ? privateKeyToAccount(config.operatorPrivateKey) : undefined;
   const walletClient = account ? createWalletClient({ account, chain: sepolia, transport: http(config.rpcUrl) }) : undefined;
 

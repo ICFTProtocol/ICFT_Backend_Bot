@@ -3,23 +3,31 @@ import { dirname } from "node:path";
 import { getAddress, isAddress, type Address } from "viem";
 
 type Candidate = { user: Address; asset: Address; requiredIcft: string; observedAt: string; status: "dry-run" | "submitted" | "failed"; txHash?: string; reason?: string };
-type KeeperState = { lastScannedBlock: string; borrowers: Address[]; candidates: Candidate[] };
+type KeeperState = { lendingPool: Address; lastScannedBlock: string; borrowers: Address[]; candidates: Candidate[] };
 
-const initial = (block: bigint): KeeperState => ({ lastScannedBlock: block.toString(), borrowers: [], candidates: [] });
+const initial = (block: bigint, lendingPool: Address): KeeperState => ({ lendingPool, lastScannedBlock: block.toString(), borrowers: [], candidates: [] });
 const normalizeAddress = (value: string): Address => getAddress(value.toLowerCase() as Address);
 
 export class Store {
   private state: KeeperState;
   private constructor(private readonly file: string, state: KeeperState) { this.state = state; }
 
-  static async open(file: string, startBlock: bigint) {
+  static async open(file: string, startBlock: bigint, lendingPool: Address) {
     try {
       const parsed = JSON.parse(await readFile(file, "utf8")) as KeeperState;
+      // A state file belongs to one LendingPool deployment. Never carry borrowers
+      // or scan offsets across a redeploy, even when a container volume survives.
+      if (!parsed.lendingPool || !isAddress(parsed.lendingPool) || normalizeAddress(parsed.lendingPool) !== lendingPool) {
+        const store = new Store(file, initial(startBlock, lendingPool));
+        await store.save();
+        return store;
+      }
       const borrowers = [...new Set((parsed.borrowers ?? [])
         .filter((borrower): borrower is Address => isAddress(borrower))
         .map((borrower) => normalizeAddress(borrower)))];
 
       const store = new Store(file, {
+        lendingPool,
         lastScannedBlock: parsed.lastScannedBlock,
         borrowers,
         candidates: parsed.candidates ?? []
@@ -28,7 +36,7 @@ export class Store {
       await store.save();
       return store;
     } catch {
-      return new Store(file, initial(startBlock));
+      return new Store(file, initial(startBlock, lendingPool));
     }
   }
 
