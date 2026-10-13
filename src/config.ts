@@ -13,6 +13,20 @@ const address = (name: string): Address => {
   return getAddress(value);
 };
 
+const addressList = (name: string): Address[] => {
+  const raw = process.env[name];
+  if (!raw) return [];
+
+  return raw
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map((value) => {
+      if (!isAddress(value)) throw new Error(`${name} contains an invalid EVM address.`);
+      return getAddress(value);
+    });
+};
+
 const number = (name: string, fallback: number) => {
   const value = process.env[name];
   const parsed = value ? Number(value) : fallback;
@@ -36,9 +50,13 @@ export const config = {
   liveExecutionAcknowledged: process.env.ALLOW_LIVE_TESTNET_EXECUTION === "true",
   operatorPrivateKey: process.env.OPERATOR_PRIVATE_KEY as Hex | undefined,
   collateralBeneficiary: process.env.COLLATERAL_BENEFICIARY ? address("COLLATERAL_BENEFICIARY") : undefined,
+  liquidationTargets: addressList("LIQUIDATION_TARGETS"),
   maxIcftPerLiquidation: BigInt(process.env.MAX_ICFT_PER_LIQUIDATION ?? "1000") * 10n ** 18n
 } as const;
 
 if (config.chainId !== 11155111) throw new Error("This keeper is intentionally locked to Ethereum Sepolia (11155111).");
 if (config.executionEnabled && !config.liveExecutionAcknowledged) throw new Error("Set ALLOW_LIVE_TESTNET_EXECUTION=true to enable transaction broadcasting.");
 if (config.executionEnabled && (!config.operatorPrivateKey || !config.collateralBeneficiary)) throw new Error("Execution requires OPERATOR_PRIVATE_KEY and COLLATERAL_BENEFICIARY.");
+if (config.executionEnabled && config.liquidationTargets.length === 0) {
+  throw new Error("Execution requires LIQUIDATION_TARGETS to restrict the keeper to approved test borrowers.");
+}

@@ -17,6 +17,19 @@ Keep `EXECUTION_ENABLED=false`. Start one process with a persistent `STATE_FILE`
 
 Render background workers are designed for continuously running processes; see the official [Background Worker documentation](https://render.com/docs/background-workers).
 
+## Render Monitoring Deployment
+
+The repository includes [`render.yaml`](render.yaml) for a single Sepolia monitoring worker.
+
+1. Create a new Render Blueprint from the keeper repository and select its deployment branch.
+2. In the Render dashboard, set `RPC_URL` to the Sepolia RPC endpoint. It is intentionally marked `sync: false` so it is never committed as part of the Blueprint.
+3. Deploy the generated `icft-sepolia-keeper` worker. It has no public URL and starts with `EXECUTION_ENABLED=false`.
+4. Confirm the logs show indexing activity and `dry-run liquidation opportunity` records only for deliberate test positions.
+
+The Blueprint mounts `/var/data` as a persistent disk and stores the cursor at `/var/data/keeper-state.json`. Keep exactly one instance because the JSON-state implementation has no distributed lock.
+
+Do not add `OPERATOR_PRIVATE_KEY`, `COLLATERAL_BENEFICIARY`, or `LIQUIDATION_TARGETS` to this monitoring deployment. Those values are only for a separately approved execution rehearsal.
+
 ## Docker Deployment
 
 Build locally:

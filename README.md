@@ -36,7 +36,8 @@ Before enabling execution:
 3. Fund the operator with Sepolia ETH for gas and sufficient ICFT for liquidations.
 4. From the operator wallet, approve ICFT for the `LiquidationEngine` proxy.
 5. Set `COLLATERAL_BENEFICIARY` to the treasury or settlement wallet that should receive seized collateral.
-6. Run `npm run check` and resolve every failure before allowing execution.
+6. Set `LIQUIDATION_TARGETS` to the test borrower address or comma-separated test borrower addresses.
+7. Run `npm run check` and resolve every failure before allowing execution.
 
 The keeper intentionally does **not** issue ICFT approvals automatically.
 
@@ -49,10 +50,12 @@ EXECUTION_ENABLED=true
 ALLOW_LIVE_TESTNET_EXECUTION=true
 OPERATOR_PRIVATE_KEY=0x...
 COLLATERAL_BENEFICIARY=0x...
+LIQUIDATION_TARGETS=0x...
 MAX_ICFT_PER_LIQUIDATION=1000
 ```
 
 `ALLOW_LIVE_TESTNET_EXECUTION=true` is a second deliberate safety gate. The process is locked to chain ID `11155111` and rejects all other chains.
+`LIQUIDATION_TARGETS` is a mandatory allowlist in live mode, so an execution rehearsal cannot act on historical or unrelated testnet borrowers.
 
 ## Operational limits
 
