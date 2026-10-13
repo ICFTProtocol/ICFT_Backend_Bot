@@ -13,10 +13,11 @@
 1. Use a new operator wallet, not a deployer or admin wallet.
 2. Grant required roles and fund the operator with test ICFT and Sepolia ETH.
 3. Set an explicit collateral beneficiary controlled by the test operations team.
-4. Run `npm run check`; verify role, balance, and allowance values.
-5. Set both execution gates to `true` only for the rehearsal.
-6. Confirm the submitted hash on Sepolia Etherscan and reconcile received collateral at the beneficiary.
-7. Return both execution flags to `false` after the rehearsal.
+4. Set `LIQUIDATION_TARGETS` to only the deliberately unhealthy test borrower.
+5. Run `npm run check`; verify role, balance, and allowance values.
+6. Set both execution gates to `true` only for the rehearsal.
+7. Confirm the submitted hash on Sepolia Etherscan and reconcile received collateral at the beneficiary.
+8. Return both execution flags to `false` after the rehearsal.
 
 ## Incident response
 

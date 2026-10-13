@@ -1,0 +1,35 @@
+services:
+  - type: worker
+    name: icft-sepolia-keeper
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    numInstances: 1
+    envVars:
+      - key: RPC_URL
+        sync: false
+      - key: CHAIN_ID
+        value: "11155111"
+      - key: ICFT_ADDRESS
+        value: "0xd3607F62dE598546e11f2C7bA8f3fDE042F652fa"
+      - key: LENDING_POOL_ADDRESS
+        value: "0xAA34c13F7932eBb77dA286F35Dc95aA13CD7626A"
+      - key: LIQUIDATION_ENGINE_ADDRESS
+        value: "0x85f6B6a0a384f5DB28E972b91D97Cd7aC1e0980e"
+      - key: WBTC_ADDRESS
+        value: "0x29f2D40B0605204364af54EC677bD022dA425d03"
+      - key: START_BLOCK
+        value: "11799163"
+      - key: LOG_BATCH_SIZE
+        value: "2000"
+      - key: POLL_INTERVAL_MS
+        value: "15000"
+      - key: STATE_FILE
+        value: "/var/data/keeper-state.json"
+      - key: EXECUTION_ENABLED
+        value: "false"
+      - key: ALLOW_LIVE_TESTNET_EXECUTION
+        value: "false"
+    disk:
+      name: keeper-state
+      mountPath: /var/data
+      sizeGB: 1

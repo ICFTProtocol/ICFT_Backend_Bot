@@ -47,6 +47,9 @@ export async function createKeeper() {
 
   async function evaluateBorrowers() {
     for (const user of store.borrowers) {
+      // Live test runs must name their borrower explicitly; dry runs can still report every candidate.
+      if (config.executionEnabled && !config.liquidationTargets.includes(user)) continue;
+
       for (const asset of config.collateralAssets) {
         try {
           const preview = await publicClient.readContract({
